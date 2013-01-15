@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.beoui</groupId>
+	<groupId>com.ganyo</groupId>
 	<artifactId>geocell</artifactId>
 	<packaging>jar</packaging>
 	<name>GeocellJava</name>
@@ -14,9 +14,11 @@
 		</license>
 	</licenses>
 
-	<scm>
-		<developerConnection>scm:svn:https://javageomodel.googlecode.com/svn/trunk/geocell/</developerConnection>
-	</scm>
+    <scm>
+        <connection>scm:git:git://github.com/scottganyo/javageomodel.git</connection>
+        <developerConnection>scm:git:git@github.com:scottganyo/javageomodel.git</developerConnection>
+        <url>http://github.com/scottganyo/javageomodel/tree/usergrid/</url>
+    </scm>
 
 	<dependencies>
 		<dependency>
@@ -100,11 +102,32 @@
 	</build>
 	<distributionManagement>
 		<repository>
-			<id>javageomodel-repo</id>
-			<url>svn:https://javageomodel.googlecode.com/svn/repository/</url>
+			<id>github</id>
+			<url>gitsite:git@github.com/scottganyo/javageomodel.git</url>
 		</repository>
 	</distributionManagement>
-	<properties>
+
+    <issueManagement>
+        <system>github</system>
+        <url>http://github.com/scottganyo/javageomodel/issues</url>
+    </issueManagement>
+
+    <developers>
+        <developer>
+            <id>scottganyo</id>
+            <name>Scott Ganyo</name>
+            <email>scott@ganyo.com</email>
+            <url>http://ganyo.com</url>
+            <organization>Ganyo Enterprises</organization>
+            <organizationUrl>http://ganyo.com</organizationUrl>
+            <roles>
+                <role>packager</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 </project>
