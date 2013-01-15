@@ -5,7 +5,13 @@
 	<packaging>jar</packaging>
 	<name>GeocellJava</name>
 	<version>0.0.10-SNAPSHOT</version>
-	<url>http://code.google.com/p/javageomodel</url>
+	<url>https://github.com/scottganyo/javageomodel</url>
+
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
 
 	<licenses>
 		<license>
@@ -54,13 +60,6 @@
 	</dependencies>
 
 	<build>
-		<extensions>
-			<extension>
-				<groupId>com.google.code.maven-svn-wagon</groupId>
-				<artifactId>maven-svn-wagon</artifactId>
-				<version>1.2</version>
-			</extension>
-		</extensions>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
