@@ -367,6 +367,7 @@ public class GeocellManager {
 
        int noDirection [] = {0,0};
        List<Tuple<int[], Double>> sortedEdgesDistances = Arrays.asList(new Tuple<int[], Double>(noDirection, 0d));
+       boolean done = false;
 
        while(!curGeocells.isEmpty()) {
            closestPossibleNextResultDist = sortedEdgesDistances.get(0).getSecond();
@@ -405,6 +406,8 @@ public class GeocellManager {
            Collections.sort(results);
            results = results.subList(0, Math.min(maxResults, results.size()));
 
+           if (done) break; // Done with search, we've searched everywhere.
+
            sortedEdgesDistances = GeocellUtils.distanceSortedEdges(curGeocells, center);
 
            if(results.size() == 0 || curGeocells.size() == 4) {
@@ -413,8 +416,13 @@ public class GeocellManager {
                        geocells, in which case we should now search the parents of those
                        geocells.*/
                curContainingGeocell = curContainingGeocell.substring(0, Math.max(curContainingGeocell.length() - 1,0));
-               if(curContainingGeocell.length() == 0) {
-                   break;  // Done with search, we've searched everywhere.
+               if (curContainingGeocell.length() == 0) {
+                 // final check - top level tiles
+                 curGeocells.clear();
+                 String[] items = "0123456789abcdef".split("(?!^)");
+                 for (String item : items) curGeocells.add(item);
+                 done = true;
+                 continue;
                }
                List<String> oldCurGeocells = new ArrayList<String>(curGeocells);
                curGeocells.clear();
