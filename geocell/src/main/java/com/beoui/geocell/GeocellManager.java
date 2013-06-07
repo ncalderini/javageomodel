@@ -337,7 +337,6 @@ public class GeocellManager {
    }
 
    public static final <T> SearchResults<T> proximitySearch(Point center, int maxResults, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, GeocellQueryEngine queryEngine, int maxGeocellResolution) {
-
      
        List<EntityLocationComparableTuple<T>> results = new ArrayList<EntityLocationComparableTuple<T>>();
 
@@ -377,7 +376,7 @@ public class GeocellManager {
        List<Tuple<int[], Double>> sortedEdgesDistances = Arrays.asList(new Tuple<int[], Double>(noDirection, 0d));
        boolean done = false;
 
-       while(!curGeocells.isEmpty()) {
+       while(!curGeocells.isEmpty() && !done && results.size() < maxResults) {
            closestPossibleNextResultDist = sortedEdgesDistances.get(0).getSecond();
            if(maxDistance > 0 && closestPossibleNextResultDist > maxDistance) {
                break;
@@ -387,7 +386,7 @@ public class GeocellManager {
            curTempUnique.removeAll(searchedCells);
            curGeocellsUnique = new ArrayList<String>(curTempUnique);
 
-           List<T> newResultEntities = queryEngine.query(baseQuery, curGeocellsUnique, entityClass);
+           List<T> queryResults = queryEngine.query(baseQuery, curGeocellsUnique, entityClass);
 
            logger.log(Level.FINE, "fetch complete for: " + StringUtils.join(curGeocellsUnique, ", "));
 
@@ -395,30 +394,41 @@ public class GeocellManager {
 
            // Begin storing distance from the search result entity to the
            // search center along with the search result itself, in a tuple.
-           List<EntityLocationComparableTuple<T>> newResults = new ArrayList<EntityLocationComparableTuple<T>>();
-           for(T entity : newResultEntities) {
-               newResults.add(new EntityLocationComparableTuple<T>(entity, GeocellUtils.distance(center, GeocellUtils.getLocation(entity))));
-           }
-           // TODO (Alex) we can optimize here. Sort is needed only if new_results.size() > max_results.
-           Collections.sort(newResults);
-           newResults = newResults.subList(0, Math.min(maxResults, newResults.size()));
-
+        
+          
            // Merge new_results into results
-           for(EntityLocationComparableTuple<T> tuple : newResults) {
-               // contains method will check if entity in tuple have same key
-               if(!results.contains(tuple)) {
-                   results.add(tuple);
-               }
+           for(T entity : queryResults) {
+             double distance = GeocellUtils.distance(center, GeocellUtils.getLocation(entity));
+             
+             //discard, it's too far
+             if(maxDistance != 0 && distance > maxDistance){
+               continue;
+             }
+             
+             EntityLocationComparableTuple<T> tuple =  new EntityLocationComparableTuple<T>(entity, distance);
+             
+             int index = Collections.binarySearch(results, tuple);
+             
+             //already in the index
+             if(index > -1){
+               continue;
+             }
+             
+             results.add(index*-1-1, tuple);
+             
+             /**
+              * Discard an additional entries as we iterate to avoid holding them all in ram
+              */
+             if(results.size() > maxResults){
+               results.remove(results.size()-1);
+             }
+             
            }
-
-           Collections.sort(results);
-           results = results.subList(0, Math.min(maxResults, results.size()));
-
-           if (done) break; // Done with search, we've searched everywhere.
-
+           
+         
            sortedEdgesDistances = GeocellUtils.distanceSortedEdges(curGeocells, center);
 
-           if(newResults.size() == 0 || curGeocells.size() == 4) {
+           if(queryResults.size() == 0 || curGeocells.size() == 4) {
                /* Either no results (in which case we optimize by not looking at
                        adjacents, go straight to the parent) or we've searched 4 adjacent
                        geocells, in which case we should now search the parents of those
@@ -507,18 +517,17 @@ public class GeocellManager {
            }
            logger.log(Level.FINE, "next result at least "+closestPossibleNextResultDist+" away, current farthest is "+currentFarthestReturnableResultDist+" dist");
        }
+       
+       
        List<T> result = new ArrayList<T>();
        for(Tuple<T, Double> entry : results.subList(0, Math.min(maxResults, results.size()))) {
-           if(maxDistance == 0 || entry.getSecond() < maxDistance) {
-               result.add(entry.getFirst());
-           } else {
-        	   logger.info("Discarding result " + entry.getFirst() + " because distance " + entry.getSecond() + "m > max distance " + maxDistance + "m");
-           }
+         result.add(entry.getFirst());
        }
+       
        logger.log(Level.INFO, "Proximity query looked in "+ searchedCells.size() +" geocells and found "+result.size()+" results.");
        
        
-       String lastGeoCell = curGeocellsUnique.size() > 0 ? curGeocellsUnique.get(curGeocellsUnique.size()-1) : null;
+       String lastGeoCell = curGeocellsUnique.size() > 0 ? curGeocellsUnique.get(0) : null;
    
        
        return new SearchResults<T>(result, lastGeoCell);
