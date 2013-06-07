@@ -36,9 +36,14 @@ public class GeocellQuery {
      */
     private List<Object> parameters;
     
+    /**
+     * The cell to start searching in
+     */
+    private String startCell;
+    
     // Use this constructor to build empty base queries.
     public GeocellQuery() {
-    	this.baseQuery = "";
+    	  this.baseQuery = "";
         this.declaredParameters = null;
         this.parameters = null;
     }
@@ -74,4 +79,16 @@ public class GeocellQuery {
         return parameters;
     }
 
+    public GeocellQuery withStartCell(String startCell){
+      this.startCell = startCell;
+      return this;
+    }
+
+    /**
+     * @return the startCell
+     */
+    public String getStartCell() {
+      return startCell;
+    }
+    
 }
