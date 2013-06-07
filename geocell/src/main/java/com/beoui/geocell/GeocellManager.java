@@ -312,7 +312,7 @@ public class GeocellManager {
    @Deprecated
    @SuppressWarnings("unchecked")
    public static final <T extends LocationCapable> List<T> proximityFetch(Point center, int maxResults, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, GeocellQueryEngine queryEngine, int maxGeocellResolution) {
-	   return proximitySearch(center, maxResults, maxDistance, entityClass, baseQuery, queryEngine, maxGeocellResolution).getResults();
+	   return proximitySearch(center, maxResults, 0, maxDistance, entityClass, baseQuery, queryEngine, maxGeocellResolution).getResults();
    }
 
    public static final <T> List<T> proximitySearch(Point center, int maxResults, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, PersistenceManager pm) {       
@@ -322,7 +322,7 @@ public class GeocellManager {
    public static final <T> List<T> proximitySearch(Point center, int maxResults, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, PersistenceManager pm, int maxGeocellResolution) {       
 	   JDOGeocellQueryEngine queryEngine = new JDOGeocellQueryEngine();
 	   queryEngine.setPersistenceManager(pm);
-       return proximitySearch(center, maxResults, maxDistance, entityClass, baseQuery, queryEngine, maxGeocellResolution).getResults();
+       return proximitySearch(center, maxResults, 0,  maxDistance, entityClass, baseQuery, queryEngine, maxGeocellResolution).getResults();
    }
 
    
@@ -333,10 +333,22 @@ public class GeocellManager {
    public static final <T> List<T> proximitySearch(Point center, int maxResults, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, EntityManager em, int maxGeocellResolution) {
        JPAGeocellQueryEngine queryEngine = new JPAGeocellQueryEngine();
        queryEngine.setEntityManager(em);
-       return proximitySearch(center, maxResults, maxDistance, entityClass, baseQuery, queryEngine, maxGeocellResolution).getResults();
+       return proximitySearch(center, maxResults, 0,  maxDistance, entityClass, baseQuery, queryEngine, maxGeocellResolution).getResults();
    }
 
-   public static final <T> SearchResults<T> proximitySearch(Point center, int maxResults, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, GeocellQueryEngine queryEngine, int maxGeocellResolution) {
+   /**
+    * Perform a search from the center.  The corresponding entities returned must be >= minDistance(inclusive) and < maxDistance (exclusive)
+    * @param center
+    * @param maxResults The maximum number of results to include
+    * @param minDistance The minimum distance (inclusive)
+    * @param maxDistance The maximum distance (exclusive)
+    * @param entityClass The entity class
+    * @param baseQuery The base query
+    * @param queryEngine The query engine to use
+    * @param maxGeocellResolution The max resolution to use when searching
+    * @return
+    */
+   public static final <T> SearchResults<T> proximitySearch(Point center, int maxResults, double minDistance, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, GeocellQueryEngine queryEngine, int maxGeocellResolution) {
      
        List<T> results = new ArrayList<T>(maxResults);
        List<Double> distances = new ArrayList<Double>(maxResults);
@@ -345,10 +357,10 @@ public class GeocellManager {
                "Invalid max resolution parameter. Must be inferior to ", MAX_GEOCELL_RESOLUTION);
 
        
-       // The current search geocell containing the lat,lon.
-       String lastStartCell = baseQuery.getStartCell();
        
-       String curContainingGeocell = lastStartCell != null? lastStartCell :GeocellUtils.compute(center, maxGeocellResolution);
+       String curContainingGeocell = GeocellUtils.compute(center, maxGeocellResolution);
+       
+       
 
        
        // Set of already searched cells
@@ -401,8 +413,9 @@ public class GeocellManager {
            for(T entity : queryResults) {
              double distance = GeocellUtils.distance(center, GeocellUtils.getLocation(entity));
              
-             //discard, it's too far
-             if(maxDistance != 0 && distance > maxDistance){
+             
+             //discard, it's too close or too far
+             if(distance < minDistance || (maxDistance != 0 && distance > maxDistance)){
                continue;
              }
              
@@ -528,19 +541,9 @@ public class GeocellManager {
        }
        
        
-       List<String> geoCells = GeocellManager.generateGeoCell(GeocellUtils.getLocation(results.get(results.size()-1)));
+       double lastDistance = distances.size() == 0? SearchResults.NO_RESULTS: distances.get(distances.size()-1);
        
-       String lastGeoCell = null;
-       
-       for(String geoCell : geoCells){
-         if(curGeocellsUnique.contains(geoCell)){
-           lastGeoCell = geoCell;
-           break;
-         }
-       }
-      
-      
-       return new SearchResults<T>(results, lastGeoCell);
+       return new SearchResults<T>(results, lastDistance, curGeocells.get(0).length());
    }
 
 }

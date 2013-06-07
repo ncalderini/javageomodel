@@ -15,43 +15,51 @@
  ******************************************************************************/
 package com.beoui.geocell;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
- * A simple wrapper class that contains the results.  It also contains the last tile we searched (to resume searching at this tile)
- * and the last match within that tile (to discard all values less than this on the next pass)
+ * A simple wrapper class that contains the results. It also contains the last
+ * tile we searched (to resume searching at this tile) and the last match within
+ * that tile (to discard all values less than this on the next pass)
  * 
  * @author tnine
- *
+ * 
  */
 public class SearchResults<T> {
 
+  public static final double NO_RESULTS = -1;
+  
   private final List<T> results;
-  private final String lastSearchedTile;
-  
- 
-  
+  private final double lastDistance;
+  private final int lastResolution;
+
   /**
    * @param results
    * @param nextStartTile
    * @param lastMatched
    */
-  public SearchResults(List<T> results, String lastSearchedTile) {
+  public SearchResults(List<T> results, double lastDistance, int lastResolution) {
     super();
     this.results = results;
-    this.lastSearchedTile = lastSearchedTile;
+    this.lastDistance = lastDistance;
+    this.lastResolution = lastResolution;
   }
 
-  public List<T> getResults(){
+  public List<T> getResults() {
     return results;
   }
-  
-  public String getLastSearchedTile(){
-    return lastSearchedTile;
-  }
-  
- 
-  
 
+  public double getLastDistance() {
+    return lastDistance;
+  }
+
+  /**
+   * Return the last resolution that was searched
+   * @return the lastResolution 
+   */
+  public int getLastResolution() {
+    return lastResolution;
+  }
+
+  
 }
