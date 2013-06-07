@@ -338,7 +338,8 @@ public class GeocellManager {
 
    public static final <T> SearchResults<T> proximitySearch(Point center, int maxResults, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, GeocellQueryEngine queryEngine, int maxGeocellResolution) {
      
-       List<EntityLocationComparableTuple<T>> results = new ArrayList<EntityLocationComparableTuple<T>>();
+       List<T> results = new ArrayList<T>(maxResults);
+       List<Double> distances = new ArrayList<Double>(maxResults);
 
        Validate.isTrue(maxGeocellResolution < MAX_GEOCELL_RESOLUTION + 1,
                "Invalid max resolution parameter. Must be inferior to ", MAX_GEOCELL_RESOLUTION);
@@ -376,7 +377,7 @@ public class GeocellManager {
        List<Tuple<int[], Double>> sortedEdgesDistances = Arrays.asList(new Tuple<int[], Double>(noDirection, 0d));
        boolean done = false;
 
-       while(!curGeocells.isEmpty() && !done && results.size() < maxResults) {
+       while(!curGeocells.isEmpty() && results.size() < maxResults) {
            closestPossibleNextResultDist = sortedEdgesDistances.get(0).getSecond();
            if(maxDistance > 0 && closestPossibleNextResultDist > maxDistance) {
                break;
@@ -405,26 +406,32 @@ public class GeocellManager {
                continue;
              }
              
-             EntityLocationComparableTuple<T> tuple =  new EntityLocationComparableTuple<T>(entity, distance);
-             
-             int index = Collections.binarySearch(results, tuple);
+             int index = Collections.binarySearch(distances, distance);
              
              //already in the index
              if(index > -1){
                continue;
              }
              
-             results.add(index*-1-1, tuple);
+             //set the insert index
+             index = index*-1-1;
+             
+             results.add(index, entity);
+             distances.add(index, distance);
              
              /**
               * Discard an additional entries as we iterate to avoid holding them all in ram
               */
              if(results.size() > maxResults){
                results.remove(results.size()-1);
+               distances.remove(distances.size()-1);
              }
              
            }
            
+           if(done){
+             break;
+           }
          
            sortedEdgesDistances = GeocellUtils.distanceSortedEdges(curGeocells, center);
 
@@ -507,30 +514,33 @@ public class GeocellManager {
 
            logger.log(Level.FINE, results.size()+" results found.");
 
+//        TODO Todd, not sure if we need this anymore
+
            // If the currently max_results'th closest item is closer than any
-           // of the next test geocells, we're done searching.
-           double currentFarthestReturnableResultDist = GeocellUtils.distance(center, GeocellUtils.getLocation(results.get(maxResults - 1).getFirst()));
-           if (closestPossibleNextResultDist >=
-               currentFarthestReturnableResultDist) {
-               logger.log(Level.FINE, "DONE next result at least "+closestPossibleNextResultDist+" away, current farthest is "+currentFarthestReturnableResultDist+" dist");
-               break;
-           }
-           logger.log(Level.FINE, "next result at least "+closestPossibleNextResultDist+" away, current farthest is "+currentFarthestReturnableResultDist+" dist");
+//           // of the next test geocells, we're done searching.
+//           double currentFarthestReturnableResultDist = GeocellUtils.distance(center, GeocellUtils.getLocation(results.get(maxResults - 1).getFirst()));
+//           if (closestPossibleNextResultDist >=
+//               currentFarthestReturnableResultDist) {
+//               logger.log(Level.FINE, "DONE next result at least "+closestPossibleNextResultDist+" away, current farthest is "+currentFarthestReturnableResultDist+" dist");
+//               break;
+//           }
+//           logger.log(Level.FINE, "next result at least "+closestPossibleNextResultDist+" away, current farthest is "+currentFarthestReturnableResultDist+" dist");
        }
        
        
-       List<T> result = new ArrayList<T>();
-       for(Tuple<T, Double> entry : results.subList(0, Math.min(maxResults, results.size()))) {
-         result.add(entry.getFirst());
+       List<String> geoCells = GeocellManager.generateGeoCell(GeocellUtils.getLocation(results.get(results.size()-1)));
+       
+       String lastGeoCell = null;
+       
+       for(String geoCell : geoCells){
+         if(curGeocellsUnique.contains(geoCell)){
+           lastGeoCell = geoCell;
+           break;
+         }
        }
-       
-       logger.log(Level.INFO, "Proximity query looked in "+ searchedCells.size() +" geocells and found "+result.size()+" results.");
-       
-       
-       String lastGeoCell = curGeocellsUnique.size() > 0 ? curGeocellsUnique.get(0) : null;
-   
-       
-       return new SearchResults<T>(result, lastGeoCell);
+      
+      
+       return new SearchResults<T>(results, lastGeoCell);
    }
 
 }
