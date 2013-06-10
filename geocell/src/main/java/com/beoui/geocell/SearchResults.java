@@ -30,7 +30,7 @@ public class SearchResults<T> {
   public static final double NO_RESULTS = -1;
   
   private final List<T> results;
-  private final double lastDistance;
+  private final List<Double> distances;
   private final int lastResolution;
 
   /**
@@ -38,10 +38,10 @@ public class SearchResults<T> {
    * @param nextStartTile
    * @param lastMatched
    */
-  public SearchResults(List<T> results, double lastDistance, int lastResolution) {
+  public SearchResults(List<T> results, List<Double> distances, int lastResolution) {
     super();
     this.results = results;
-    this.lastDistance = lastDistance;
+    this.distances = distances;
     this.lastResolution = lastResolution;
   }
 
@@ -49,8 +49,8 @@ public class SearchResults<T> {
     return results;
   }
 
-  public double getLastDistance() {
-    return lastDistance;
+  public List<Double> getDistances() {
+    return distances;
   }
 
   /**

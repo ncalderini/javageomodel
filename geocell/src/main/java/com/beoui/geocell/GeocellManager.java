@@ -423,7 +423,13 @@ public class GeocellManager {
              
              //already in the index
              if(index > -1){
-               continue;
+               //check if it's the same point, if it is, skip it.  Otherwise continue below
+               //set the insert index
+               
+               if(GeocellUtils.getKeyString(results.get(index)).equals(GeocellUtils.getKeyString(entity))){
+                 continue;
+               }
+               
              }
              
              //set the insert index
@@ -540,10 +546,8 @@ public class GeocellManager {
 //           logger.log(Level.FINE, "next result at least "+closestPossibleNextResultDist+" away, current farthest is "+currentFarthestReturnableResultDist+" dist");
        }
        
-       
-       double lastDistance = distances.size() == 0? SearchResults.NO_RESULTS: distances.get(distances.size()-1);
-       
-       return new SearchResults<T>(results, lastDistance, curGeocells.get(0).length());
+      
+       return new SearchResults<T>(results, distances, curGeocells.get(0).length());
    }
 
 }
