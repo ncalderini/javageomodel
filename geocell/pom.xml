@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.ganyo</groupId>
+	<groupId>org.usergrid</groupId>
 	<artifactId>geocell</artifactId>
 	<packaging>jar</packaging>
 	<name>GeocellJava</name>
 	<version>0.0.11-SNAPSHOT</version>
-	<url>https://github.com/scottganyo/javageomodel</url>
+	<url>https://github.com/apigee/javageomodel</url>
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -21,9 +21,9 @@
 	</licenses>
 
     <scm>
-        <connection>scm:git:git://github.com/scottganyo/javageomodel.git</connection>
-        <developerConnection>scm:git:git@github.com:scottganyo/javageomodel.git</developerConnection>
-        <url>http://github.com/scottganyo/javageomodel/tree/usergrid/</url>
+        <connection>scm:git:git://github.com/apigee/javageomodel.git</connection>
+        <developerConnection>scm:git:git@github.com:apigee/javageomodel.git</developerConnection>
+        <url>http://github.com/apigee/javageomodel/tree/usergrid/</url>
     </scm>
 
 	<dependencies>
