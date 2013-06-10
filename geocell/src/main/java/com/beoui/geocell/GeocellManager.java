@@ -430,10 +430,15 @@ public class GeocellManager {
                  continue;
                }
                
+               index++;
+               
+             }else{
+
+               //set the insert index
+               index = (index+1)*-1;
              }
              
-             //set the insert index
-             index = index*-1-1;
+         
              
              results.add(index, entity);
              distances.add(index, distance);
