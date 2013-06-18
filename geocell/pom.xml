@@ -4,7 +4,7 @@
 	<artifactId>geocell</artifactId>
 	<packaging>jar</packaging>
 	<name>GeocellJava</name>
-	<version>0.0.11-SNAPSHOT</version>
+	<version>0.0.11</version>
 	<url>https://github.com/apigee/javageomodel</url>
 
     <parent>
@@ -24,7 +24,8 @@
         <connection>scm:git:git://github.com/apigee/javageomodel.git</connection>
         <developerConnection>scm:git:git@github.com:apigee/javageomodel.git</developerConnection>
         <url>http://github.com/apigee/javageomodel/tree/usergrid/</url>
-    </scm>
+      <tag>geocell-0.0.11</tag>
+  </scm>
 
 	<dependencies>
 		<dependency>
