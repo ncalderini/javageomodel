@@ -56,7 +56,7 @@ public class GeocellManagerTest {
 
 		List<ObjectToSave> results = GeocellManager.proximitySearch(center, 1, 10.0, ObjectToSave.class, baseQuery, persistenceManager, 1);
 
-		verify(jdoQuery).declareParameters("String geocellsP");
+		verify(jdoQuery, times(2)).declareParameters("String geocellsP");
 		assertNotNull(results);
         assertTrue(results.isEmpty());
 	}
@@ -72,7 +72,7 @@ public class GeocellManagerTest {
 
 		List<ObjectToSave> results = GeocellManager.proximitySearch(center, 1, 10.0, ObjectToSave.class, baseQuery, persistenceManager, 1);
 
-		verify(jdoQuery).declareParameters("declaredParameters, String geocellsP");
+		verify(jdoQuery, times(2)).declareParameters("declaredParameters, String geocellsP");
 		assertNotNull(results);
 		assertTrue(results.isEmpty());
 	}
@@ -151,7 +151,7 @@ public class GeocellManagerTest {
 
 		assertNotNull(results);
 		verify(entityManager).createQuery("SELECT e FROM JPAEntity where e.keyString = ?1 and geoCellsData in ('c')");
-		verify(jpaQuery).setParameter(1, "testKeyString");
+		verify(jpaQuery, times(2)).setParameter(1, "testKeyString");
 	}
 
 	@Test
@@ -168,7 +168,7 @@ public class GeocellManagerTest {
 
 		assertNotNull(results);
 		verify(entityManager).createQuery("SELECT e FROM JPAEntity where e.keyString = ?1 and geoCellsData in ('c') order by e.keyString");
-		verify(jpaQuery).setParameter(1, "testKeyString");
+		verify(jpaQuery, times(2)).setParameter(1, "testKeyString");
 	}
 
 	@Test
@@ -185,7 +185,7 @@ public class GeocellManagerTest {
 
 		assertNotNull(results);
 		verify(entityManager).createQuery("SELECT e FROM JPAEntity where e.keyString = ?1 and geoCellsData in ('c') order by e.keyString");
-		verify(jpaQuery).setParameter(1, "testKeyString");
+		verify(jpaQuery, times(2)).setParameter(1, "testKeyString");
 	}
 
 	@Test
