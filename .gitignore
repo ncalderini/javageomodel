@@ -1,2 +1,8 @@
 .project
 geocell/.settings
+target
+*.iml
+.idea
+
+# ignore stupic Mac OSX files
+.DS_Store
