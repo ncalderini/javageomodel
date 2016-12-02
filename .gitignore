@@ -1,8 +1,7 @@
-.project
-geocell/.settings
-target
+.gradle
 *.iml
 .idea
+/geocell/build
 
 # ignore stupic Mac OSX files
 .DS_Store
