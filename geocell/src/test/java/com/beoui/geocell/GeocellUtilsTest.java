@@ -1,14 +1,11 @@
 package com.beoui.geocell;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-
 import com.beoui.geocell.model.Point;
 import com.beoui.utils.JPAEntity;
+import com.google.appengine.api.datastore.GeoPt;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Port of http://code.google.com/p/geomodel/source/browse/trunk/geo/geocell_test.py
@@ -68,8 +65,7 @@ public class GeocellUtilsTest {
 	@Test
 	public void testGetLocation() {
 		JPAEntity entity = new JPAEntity();
-		entity.setLatitude(0.5);
-		entity.setLongitude(-0.5);
+		entity.setLocation(new GeoPt(0.5f, -0.5f));
 
 		Point location = GeocellUtils.getLocation(entity);
 
@@ -81,8 +77,7 @@ public class GeocellUtilsTest {
 	@Test
 	public void testGetLocationWithEntitySubClass() {
 		JPAEntitySubclass entity = new JPAEntitySubclass();
-		entity.setLatitude(0.5);
-		entity.setLongitude(-0.5);
+		entity.setLocation(new GeoPt(0.5f, -0.5f));
 
 		Point location = GeocellUtils.getLocation(entity);
 

@@ -13,13 +13,13 @@ and limitations under the License.
 package com.beoui.geocell;
 
 import com.beoui.geocell.annotations.Geocells;
-import com.beoui.geocell.annotations.Latitude;
-import com.beoui.geocell.annotations.Longitude;
+import com.beoui.geocell.annotations.Location;
 import com.beoui.geocell.comparator.DoubleTupleComparator;
 import com.beoui.geocell.model.BoundingBox;
 import com.beoui.geocell.model.LocationCapable;
 import com.beoui.geocell.model.Point;
 import com.beoui.geocell.model.Tuple;
+import com.google.appengine.api.datastore.GeoPt;
 
 import javax.jdo.annotations.PrimaryKey;
 import javax.persistence.Id;
@@ -572,24 +572,13 @@ public final class GeocellUtils {
     	}
     	
     	Point location = new Point();
-    	
-    	try {
-	        location.setLat(getField(entity.getClass(), Latitude.class).getDouble(entity));
-	    	location.setLon(getField(entity.getClass(), Longitude.class).getDouble(entity));
-        } catch (IllegalArgumentException e1) {
-			try {
-				location.setLat((Double) getField(entity.getClass(), Latitude.class).get(entity));
-				location.setLon((Double) getField(entity.getClass(), Longitude.class).get(entity));
-			} catch (IllegalArgumentException e2) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IllegalAccessException e2) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		} catch (IllegalAccessException e1) {
-	        // TODO Auto-generated catch block
-	        e1.printStackTrace();
+
+        try {
+            GeoPt locationField = (GeoPt) getField(entity.getClass(), Location.class).get(entity);
+            location.setLat(locationField.getLatitude());
+            location.setLon(locationField.getLongitude());
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
 
         return location;

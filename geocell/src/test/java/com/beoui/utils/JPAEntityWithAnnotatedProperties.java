@@ -1,27 +1,23 @@
 package com.beoui.utils;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.beoui.geocell.annotations.Geocells;
+import com.beoui.geocell.annotations.Location;
+import com.google.appengine.api.datastore.GeoPt;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-
-import com.beoui.geocell.annotations.Geocells;
-import com.beoui.geocell.annotations.Latitude;
-import com.beoui.geocell.annotations.Longitude;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class JPAEntityWithAnnotatedProperties {
 
 	String id;
 
-	@Longitude
-	double longitude;
-
-	@Latitude
-	double latitude;
+	@Location
+	private GeoPt location;
 
 	@Geocells
 	@OneToMany(fetch = FetchType.EAGER)
@@ -36,20 +32,12 @@ public class JPAEntityWithAnnotatedProperties {
 		this.id = id;
 	}
 
-	public double getLongitude() {
-		return longitude;
+	public GeoPt getLocation() {
+		return location;
 	}
 
-	public void setLongitude(double longitude) {
-		this.longitude = longitude;
-	}
-
-	public double getLatitude() {
-		return latitude;
-	}
-
-	public void setLatitude(double latitude) {
-		this.latitude = latitude;
+	public void setLocation(GeoPt location) {
+		this.location = location;
 	}
 
 	public List<String> getGeoCellsData() {

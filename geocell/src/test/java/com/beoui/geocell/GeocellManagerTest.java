@@ -1,37 +1,31 @@
 package com.beoui.geocell;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.anyVararg;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-import javax.persistence.EntityManager;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-
 import com.beoui.geocell.model.BoundingBox;
 import com.beoui.geocell.model.CostFunction;
 import com.beoui.geocell.model.GeocellQuery;
 import com.beoui.geocell.model.Point;
 import com.beoui.utils.JPAEntity;
 import com.beoui.utils.ObjectToSave;
+import com.google.appengine.api.datastore.GeoPt;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
+import javax.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.anyVararg;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GeocellManagerTest {
@@ -85,6 +79,7 @@ public class GeocellManagerTest {
 
         List<ObjectToSave> queryResults = new ArrayList<ObjectToSave>();
         ObjectToSave result1 = new ObjectToSave();
+		result1.setLocation(new GeoPt(0f, 0f));
         queryResults.add(result1);
         
         when(persistenceManager.newQuery(ObjectToSave.class, "baseQuery && geocells.contains(geocellsP)")).thenReturn(jdoQuery);
@@ -107,11 +102,13 @@ public class GeocellManagerTest {
         List<ObjectToSave> queryResults1 = new ArrayList<ObjectToSave>();
         ObjectToSave result1 = new ObjectToSave();
         result1.setId(1L);
+        result1.setLocation(new GeoPt(0f, 0f));
         queryResults1.add(result1);
 
         List<ObjectToSave> queryResults2 = new ArrayList<ObjectToSave>();
         ObjectToSave result2 = new ObjectToSave();
         result2.setId(2L);
+		result2.setLocation(new GeoPt(0f, 0f));
         queryResults2.add(result2);
 
         when(persistenceManager.newQuery(ObjectToSave.class, "baseQuery && geocells.contains(geocellsP)")).thenReturn(jdoQuery);
@@ -197,25 +194,21 @@ public class GeocellManagerTest {
         List<ObjectToSave> queryResults1 = new ArrayList<ObjectToSave>();
         ObjectToSave result1 = new ObjectToSave();
         result1.setId(1L);
-        result1.setLatitude(2.0);
-        result1.setLongitude(-2.0);
+		result1.setLocation(new GeoPt(2.0f, -2.0f));
         queryResults1.add(result1);
         ObjectToSave result3 = new ObjectToSave();
         result3.setId(3L);
-        result3.setLatitude(2.0);
-        result3.setLongitude(2.0);
+		result3.setLocation(new GeoPt(2.0f, -2.0f));
         queryResults1.add(result3);
 
         List<ObjectToSave> queryResults2 = new ArrayList<ObjectToSave>();
         ObjectToSave result2 = new ObjectToSave();
         result2.setId(2L);
-        result2.setLatitude(-2.0);
-        result2.setLongitude(-2.0);
+		result2.setLocation(new GeoPt(2.0f, -2.0f));
         queryResults2.add(result2);
         ObjectToSave result4 = new ObjectToSave();
         result4.setId(4L);
-        result4.setLatitude(-2.0);
-        result4.setLongitude(2.0);
+		result4.setLocation(new GeoPt(2.0f, -2.0f));
         queryResults2.add(result4);
 
 		when(entityManager.createQuery(anyString())).thenReturn(jpaQuery);

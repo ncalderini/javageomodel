@@ -13,22 +13,21 @@ and limitations under the License.
 
 package com.beoui.utils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.jdo.PersistenceManager;
-import javax.persistence.EntityManager;
-
-import junit.framework.Assert;
-import junit.framework.TestCase;
-
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.model.BoundingBox;
 import com.beoui.geocell.model.CostFunction;
 import com.beoui.geocell.model.GeocellQuery;
 import com.beoui.geocell.model.Point;
+import com.google.appengine.api.datastore.GeoPt;
+import junit.framework.Assert;
+import junit.framework.TestCase;
+
+import javax.jdo.PersistenceManager;
+import javax.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Unit test also used to explain how to use Geocell class.
@@ -57,8 +56,7 @@ public class HowToUseGeocell extends TestCase {
 
         // Save your instance
         ObjectToSave obj = new ObjectToSave();
-        obj.setLatitude(lat);
-        obj.setLongitude(lon);
+        obj.setLocation(new GeoPt((float)lat, (float)lon));
         obj.setGeocells(cells);
 
         //objDao.save(obj);

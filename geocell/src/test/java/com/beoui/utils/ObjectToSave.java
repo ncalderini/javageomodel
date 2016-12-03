@@ -13,15 +13,14 @@ and limitations under the License.
 
 package com.beoui.utils;
 
-import java.util.List;
+import com.beoui.geocell.annotations.Geocells;
+import com.beoui.geocell.annotations.Location;
+import com.google.appengine.api.datastore.GeoPt;
 
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-
-import com.beoui.geocell.annotations.Geocells;
-import com.beoui.geocell.annotations.Latitude;
-import com.beoui.geocell.annotations.Longitude;
+import java.util.List;
 
 @PersistenceCapable
 public class ObjectToSave {
@@ -31,12 +30,8 @@ public class ObjectToSave {
     private long id;
 
     @Persistent
-    @Latitude
-    private double latitude;
-
-    @Persistent
-    @Longitude
-    private double longitude;
+    @Location
+    private GeoPt location;
 
     @Persistent
     @Geocells
@@ -50,20 +45,12 @@ public class ObjectToSave {
         this.id = id;
     }
 
-    public double getLatitude() {
-        return latitude;
+    public GeoPt getLocation() {
+        return location;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setLocation(GeoPt location) {
+        this.location = location;
     }
 
     public List<String> getGeocells() {
