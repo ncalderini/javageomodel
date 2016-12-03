@@ -12,17 +12,6 @@ and limitations under the License.
  */
 package com.beoui.geocell;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.jdo.annotations.PrimaryKey;
-import javax.persistence.Id;
-
 import com.beoui.geocell.annotations.Geocells;
 import com.beoui.geocell.annotations.Latitude;
 import com.beoui.geocell.annotations.Longitude;
@@ -31,6 +20,12 @@ import com.beoui.geocell.model.BoundingBox;
 import com.beoui.geocell.model.LocationCapable;
 import com.beoui.geocell.model.Point;
 import com.beoui.geocell.model.Tuple;
+
+import javax.jdo.annotations.PrimaryKey;
+import javax.persistence.Id;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.*;
 
 /**
 #
@@ -601,10 +596,6 @@ public final class GeocellUtils {
     }
 
     public static String getGeocellsFieldName(Class<?> type) {
-    	if(LocationCapable.class.isAssignableFrom(type)) {
-    		return "geocells";
-    	}
-
-    	return getField(type, Geocells.class).getName();
+        return getField(type, Geocells.class).getName();
     }
 }
