@@ -1,4 +1,28 @@
 apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'com.jfrog.bintray'
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+def bintrayUser = properties.getProperty('bintray.user')
+def bintrayKey = properties.getProperty('bintray.apikey')
+
+version = '0.1'
+
+bintray {
+    user = bintrayUser
+    key = bintrayKey
+    configurations = ['archives']
+    pkg {
+        repo = 'maven'
+        name = 'geocell'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/ncalderini/javageomodel.git'
+        version {
+            name = '0.1'
+        }
+    }
+}
 
 dependencies {
     compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.21'

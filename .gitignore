@@ -1,6 +1,7 @@
 .gradle
 *.iml
 .idea
+local.properties
 /geocell/build
 
 # ignore stupic Mac OSX files
