@@ -3,6 +3,7 @@
 .idea
 local.properties
 /geocell/build
+/geocell/out
 
 # ignore stupic Mac OSX files
 .DS_Store
