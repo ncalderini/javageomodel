@@ -1,4 +1,4 @@
-package com.beoui.geocell.model;
+package com.ncalderini.geocell.model;
 
 import java.util.List;
 
@@ -11,7 +11,6 @@ import java.util.List;
  * @author Alexandre Gellibert
  *
  */
-@Deprecated
 public interface LocationCapable {
 
     /**

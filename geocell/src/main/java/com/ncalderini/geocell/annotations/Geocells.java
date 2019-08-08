@@ -1,4 +1,4 @@
-package com.beoui.geocell.annotations;
+package com.ncalderini.geocell.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

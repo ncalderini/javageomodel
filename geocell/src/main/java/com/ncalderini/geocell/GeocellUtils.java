@@ -10,19 +10,18 @@ BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
 implied. See the License for the specific language governing permissions
 and limitations under the License.
  */
-package com.beoui.geocell;
+package com.ncalderini.geocell;
 
-import com.beoui.geocell.annotations.Geocells;
-import com.beoui.geocell.annotations.Location;
-import com.beoui.geocell.comparator.DoubleTupleComparator;
-import com.beoui.geocell.model.BoundingBox;
-import com.beoui.geocell.model.LocationCapable;
-import com.beoui.geocell.model.Point;
-import com.beoui.geocell.model.Tuple;
+import com.ncalderini.geocell.annotations.Geocells;
+import com.ncalderini.geocell.annotations.Location;
+import com.ncalderini.geocell.comparator.DoubleTupleComparator;
+import com.ncalderini.geocell.model.BoundingBox;
+import com.ncalderini.geocell.model.LocationCapable;
+import com.ncalderini.geocell.model.Point;
+import com.ncalderini.geocell.model.Tuple;
 import com.google.appengine.api.datastore.GeoPt;
+import com.googlecode.objectify.annotation.Id;
 
-import javax.jdo.annotations.PrimaryKey;
-import javax.persistence.Id;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -529,10 +528,7 @@ public final class GeocellUtils {
     		return ((LocationCapable) entity).getKeyString();
     	}
 
-    	Field field = getField(entity.getClass(), PrimaryKey.class);
-    	if(field == null) {
-        	field = getField(entity.getClass(), Id.class);
-    	}
+    	Field field = getField(entity.getClass(), Id.class);
 
     	try {
 	        return field.get(entity).toString();
@@ -567,7 +563,7 @@ public final class GeocellUtils {
     }
 
     public static Point getLocation(Object entity) {
-    	if(entity instanceof LocationCapable) {
+    	if (entity instanceof LocationCapable) {
     		return ((LocationCapable) entity).getLocation();
     	}
     	

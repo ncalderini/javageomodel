@@ -1,28 +1,12 @@
-package com.beoui.geocell;
+package com.ncalderini.geocell;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.jdo.PersistenceManager;
-import javax.persistence.EntityManager;
-
+import com.ncalderini.geocell.model.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 
-import com.beoui.geocell.comparator.EntityLocationComparableTuple;
-import com.beoui.geocell.model.BoundingBox;
-import com.beoui.geocell.model.CostFunction;
-import com.beoui.geocell.model.DefaultCostFunction;
-import com.beoui.geocell.model.GeocellQuery;
-import com.beoui.geocell.model.LocationCapable;
-import com.beoui.geocell.model.Point;
-import com.beoui.geocell.model.Tuple;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
 #
@@ -205,135 +189,10 @@ public class GeocellManager {
         logger.log(Level.INFO, "Calculate cells "+StringUtils.join(minCostCellSet, ", ")+" in box ("+bbox.getSouth()+","+bbox.getWest()+") ("+bbox.getNorth()+","+bbox.getEast()+")");
         return minCostCellSet;
     }
-
-    /**
-     *
-     * Performs a proximity/radius fetch on the given query.
-
-        Fetches at most <max_results> entities matching the given query,
-        ordered by ascending distance from the given center point, and optionally
-        limited by the given maximum distance.
-
-        This method uses a greedy algorithm that starts by searching high-resolution
-        geocells near the center point and gradually looking in lower and lower
-        resolution cells until max_results entities have been found matching the
-        given query and no closer possible entities can be found.
-     *
-     * @param center A Point indicating the center point around which to search for matching entities.
-     * @param maxResults (required) must be > 0. The larger this number, the longer the fetch will take.
-     * @param maxDistance (optional) A number indicating the maximum distance to search, in meters. Set to 0 if no max distance is expected
-     * @param entityClass class of the entity to search. MUST implement LocationCapable class because we use entity location and key, and also "GEOCELLS" columnn in query.
-     * @param baseQuery query that will be enhanced by algorithm. see GeocellQuery class for more information.
-     * @param pm PersistenceManager to be used to create new queries
-     * @param maxGeocellResolution the resolution (size of cell) when we start the algorithm. If you expect your search to run until big boxes (not many entities near the center), think about using a lower resolution for better performance. If you don't want to bother, use other method below without this parameter.
-     * @return the list of entities found near the center and ordered by distance.
-     *
-     * @throws all exceptions that can be thrown when running queries.
-     */
-    @Deprecated
-    public static final <T extends LocationCapable> List<T> proximityFetch(Point center, int maxResults, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, PersistenceManager pm, int maxGeocellResolution) {
-        JDOGeocellQueryEngine queryEngine = new JDOGeocellQueryEngine();
-        queryEngine.setPersistenceManager(pm);
-        return GeocellManager.proximityFetch(center, maxResults, maxDistance, entityClass, baseQuery, queryEngine, maxGeocellResolution);
-    }
-
-    /**
-     *
-     * See javadoc of method with parameter maxResolution.
-     * Use MAX_GEOCELL_RESOLUTION as a starting resolution.
-     *
-     */
-    @Deprecated
-    public static final <T extends LocationCapable> List<T> proximityFetch(Point center, int maxResults, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, PersistenceManager pm) {
-        return proximityFetch(center, maxResults, maxDistance, entityClass, baseQuery, pm, MAX_GEOCELL_RESOLUTION);
-    }
-
-    /**
-    * Performs a proximity/radius fetch on the given JPA query.
-    *
-    * @see GeocellManager#proximityFetch(Point, int, double, Class, GeocellQuery, PersistenceManager, int)
-    * 
-    * @param center A Point indicating the center point around which to search for matching entities.
-    * @param maxResults (required) must be > 0. The larger this number, the longer the fetch will take.
-    * @param maxDistance (optional) A number indicating the maximum distance to search, in meters. Set to 0 if no max distance is expected
-    * @param entityClass class of the entity to search. MUST implement LocationCapable class because we use entity location and key, and also "GEOCELLS" columnn in query.
-    * @param baseQuery query that will be enhanced by algorithm. see GeocellQuery class for more information.
-    * @param em JPA EntityManager to be used to create new queries
-    * @param maxGeocellResolution the resolution (size of cell) when we start the algorithm. If you expect your search to run until big boxes (not many entities near the center), think about using a lower resolution for better performance. If you don't want to bother, use other method below without this parameter.
-    * @return the list of entities found near the center and ordered by distance.
-    *
-    * @throws all exceptions that can be thrown when running queries.
-    */
-    @Deprecated
-   public static final <T extends LocationCapable> List<T> proximityFetch(Point center, int maxResults, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, EntityManager em, int maxGeocellResolution) {
-       JPAGeocellQueryEngine queryEngine = new JPAGeocellQueryEngine();
-       queryEngine.setEntityManager(em);
-       return GeocellManager.proximityFetch(center, maxResults, maxDistance, entityClass, baseQuery, queryEngine, maxGeocellResolution);
-   }
-
-   /**
-    * Performs a proximity/radius fetch on the given JPA query.
-    *
-    * @see GeocellManager#proximityFetch(Point, int, double, Class, GeocellQuery, PersistenceManager)
-    * 
-    * @param center A Point indicating the center point around which to search for matching entities.
-    * @param maxResults (required) must be > 0. The larger this number, the longer the fetch will take.
-    * @param maxDistance (optional) A number indicating the maximum distance to search, in meters. Set to 0 if no max distance is expected
-    * @param entityClass class of the entity to search. MUST implement LocationCapable class because we use entity location and key, and also "GEOCELLS" columnn in query.
-    * @param baseQuery query that will be enhanced by algorithm. see GeocellQuery class for more information.
-    * @param em JPA EntityManager to be used to create new queries
-    * @return the list of entities found near the center and ordered by distance.
-    *
-    * @throws all exceptions that can be thrown when running queries.
-    * @return
-    */
-   @Deprecated
-   public static final <T extends LocationCapable> List<T> proximityFetch(Point center, int maxResults, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, EntityManager em) {
-       return proximityFetch(center, maxResults, maxDistance, entityClass, baseQuery, em, MAX_GEOCELL_RESOLUTION);
-   }
-
-   /**
-    * Performs a generic proximity/radius fetch on the given query. Database engine can be swapped by implementing the {@link GeocellQueryEngine}
-    * interface, for example for web service based queries.
-    *
-    * @see GeocellManager#proximityFetch(Point, int, double, Class, GeocellQuery, PersistenceManager)
-    * 
-    * @param center A Point indicating the center point around which to search for matching entities.
-    * @param maxResults (required) must be > 0. The larger this number, the longer the fetch will take.
-    * @param maxDistance (optional) A number indicating the maximum distance to search, in meters. Set to 0 if no max distance is expected
-    * @param entityClass class of the entity to search. MUST implement LocationCapable class because we use entity location and key, and also "GEOCELLS" columnn in query.
-    * @param baseQuery query that will be enhanced by algorithm. see GeocellQuery class for more information.
-    * @param queryEngine  {@link GeocellQueryEngine} to be used to execute queries
-    * @return the list of entities found near the center and ordered by distance.
-    *
-    * @throws all exceptions that can be thrown when running queries.
-    * @return
-    */
-   @Deprecated
-   @SuppressWarnings("unchecked")
-   public static final <T extends LocationCapable> List<T> proximityFetch(Point center, int maxResults, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, GeocellQueryEngine queryEngine, int maxGeocellResolution) {
-	   return proximitySearch(center, maxResults, 0, maxDistance, entityClass, baseQuery, queryEngine, maxGeocellResolution).getResults();
-   }
-
-   public static final <T> List<T> proximitySearch(Point center, int maxResults, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, PersistenceManager pm) {       
-       return proximitySearch(center, maxResults, maxDistance, entityClass, baseQuery, pm, MAX_GEOCELL_RESOLUTION);
-   }
    
-   public static final <T> List<T> proximitySearch(Point center, int maxResults, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, PersistenceManager pm, int maxGeocellResolution) {       
-	   JDOGeocellQueryEngine queryEngine = new JDOGeocellQueryEngine();
-	   queryEngine.setPersistenceManager(pm);
-       return proximitySearch(center, maxResults, 0,  maxDistance, entityClass, baseQuery, queryEngine, maxGeocellResolution).getResults();
-   }
-
-   
-   public static final <T> List<T> proximitySearch(Point center, int maxResults, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, EntityManager em) {       
-       return proximitySearch(center, maxResults, maxDistance, entityClass, baseQuery, em, MAX_GEOCELL_RESOLUTION);
-   }
-   
-   public static final <T> List<T> proximitySearch(Point center, int maxResults, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, EntityManager em, int maxGeocellResolution) {
-       JPAGeocellQueryEngine queryEngine = new JPAGeocellQueryEngine();
-       queryEngine.setEntityManager(em);
-       return proximitySearch(center, maxResults, 0,  maxDistance, entityClass, baseQuery, queryEngine, maxGeocellResolution).getResults();
+   public static final <T> List<T> proximitySearch(Point center, int maxResults, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, int maxGeocellResolution) {
+       ObjectifyGeocellQueryEngine ofySearch = new ObjectifyGeocellQueryEngine();
+       return proximitySearch(center, maxResults, 0,  maxDistance, entityClass, baseQuery, ofySearch, maxGeocellResolution).getResults();
    }
 
    /**
@@ -356,12 +215,7 @@ public class GeocellManager {
        Validate.isTrue(maxGeocellResolution < MAX_GEOCELL_RESOLUTION + 1,
                "Invalid max resolution parameter. Must be inferior to ", MAX_GEOCELL_RESOLUTION);
 
-       
-       
        String curContainingGeocell = GeocellUtils.compute(center, maxGeocellResolution);
-       
-       
-
        
        // Set of already searched cells
        Set<String> searchedCells = new HashSet<String>();
@@ -389,9 +243,9 @@ public class GeocellManager {
        List<Tuple<int[], Double>> sortedEdgesDistances = Arrays.asList(new Tuple<int[], Double>(noDirection, 0d));
        boolean done = false;
 
-       while(!curGeocells.isEmpty() && results.size() < maxResults) {
+       while (!curGeocells.isEmpty() && results.size() < maxResults) {
            closestPossibleNextResultDist = sortedEdgesDistances.get(0).getSecond();
-           if(maxDistance > 0 && closestPossibleNextResultDist > maxDistance) {
+           if (maxDistance > 0 && closestPossibleNextResultDist > maxDistance) {
                break;
            }
 
@@ -410,56 +264,51 @@ public class GeocellManager {
         
           
            // Merge new_results into results
-           for(T entity : queryResults) {
+           for (T entity : queryResults) {
              double distance = GeocellUtils.distance(center, GeocellUtils.getLocation(entity));
              
              
              //discard, it's too close or too far
-             if(distance < minDistance || (maxDistance != 0 && distance > maxDistance)){
+             if (distance < minDistance || (maxDistance != 0 && distance > maxDistance)) {
                continue;
              }
              
              int index = Collections.binarySearch(distances, distance);
              
              //already in the index
-             if(index > -1){
+             if (index > -1) {
                //check if it's the same point, if it is, skip it.  Otherwise continue below
                //set the insert index
                
-               if(GeocellUtils.getKeyString(results.get(index)).equals(GeocellUtils.getKeyString(entity))){
+               if (GeocellUtils.getKeyString(results.get(index)).equals(GeocellUtils.getKeyString(entity))) {
                  continue;
                }
                
                index++;
                
-             }else{
-
+             } else {
                //set the insert index
                index = (index+1)*-1;
              }
-             
-         
-             
              results.add(index, entity);
              distances.add(index, distance);
              
              /**
               * Discard an additional entries as we iterate to avoid holding them all in ram
               */
-             if(results.size() > maxResults){
+             if (results.size() > maxResults) {
                results.remove(results.size()-1);
                distances.remove(distances.size()-1);
              }
-             
            }
            
-           if(done){
+           if (done) {
              break;
            }
          
            sortedEdgesDistances = GeocellUtils.distanceSortedEdges(curGeocells, center);
 
-           if(queryResults.size() == 0 || curGeocells.size() == 4) {
+           if (queryResults.size() == 0 || curGeocells.size() == 4) {
                /* Either no results (in which case we optimize by not looking at
                        adjacents, go straight to the parent) or we've searched 4 adjacent
                        geocells, in which case we should now search the parents of those
@@ -471,30 +320,28 @@ public class GeocellManager {
                  String[] items = "0123456789abcdef".split("(?!^)");
                  for (String item : items) curGeocells.add(item);
                  done = true;
+               } else {
+                   List<String> oldCurGeocells = new ArrayList<String>(curGeocells);
+                   curGeocells.clear();
+                   for (String cell : oldCurGeocells) {
+                       if (cell.length() > 0) {
+                           String newCell = cell.substring(0, cell.length() - 1);
+                           if (!curGeocells.contains(newCell)) {
+                               curGeocells.add(newCell);
+                           }
+                       }
+                   }
                }
-               else{
-                 List<String> oldCurGeocells = new ArrayList<String>(curGeocells);
-                 curGeocells.clear();
-                 for(String cell : oldCurGeocells) {
-                     if(cell.length() > 0) {
-                         String newCell = cell.substring(0, cell.length() - 1);
-                         if(!curGeocells.contains(newCell)) {
-                             curGeocells.add(newCell);
-                         }
-                     }
-                 }
-               }
-               
            } else if(curGeocells.size() == 1) {
                // Get adjacent in one direction.
                // TODO(romannurik): Watch for +/- 90 degree latitude edge case geocells.
-               for(int i = 0; i < sortedEdgesDistances.size(); i ++){
+               for (int i = 0; i < sortedEdgesDistances.size(); i ++){
                  
                  int nearestEdge[] = sortedEdgesDistances.get(i).getFirst();
                  String edge = GeocellUtils.adjacent(curGeocells.get(0), nearestEdge);
                  
                  //we're at the edge of the world, search in a different direction
-                 if(edge == null){
+                 if (edge == null) {
                    continue;
                  }
                  
@@ -502,57 +349,43 @@ public class GeocellManager {
                  break;
                }
                
-           } else if(curGeocells.size() == 2) {
+           } else if (curGeocells.size() == 2) {
                // Get adjacents in perpendicular direction.
                int nearestEdge[] = GeocellUtils.distanceSortedEdges(Arrays.asList(curContainingGeocell), center).get(0).getFirst();
                int[] perpendicularNearestEdge = {0,0};
-               if(nearestEdge[0] == 0) {
+               if (nearestEdge[0] == 0) {
                    // Was vertical, perpendicular is horizontal.
-                   for(Tuple<int[], Double> edgeDistance : sortedEdgesDistances) {
-                       if(edgeDistance.getFirst()[0] != 0) {
+                   for (Tuple<int[], Double> edgeDistance : sortedEdgesDistances) {
+                       if (edgeDistance.getFirst()[0] != 0) {
                            perpendicularNearestEdge = edgeDistance.getFirst();
                            break;
                        }
                    }
                } else {
                    // Was horizontal, perpendicular is vertical.
-                   for(Tuple<int[], Double> edgeDistance : sortedEdgesDistances) {
-                       if(edgeDistance.getFirst()[0] == 0) {
+                   for (Tuple<int[], Double> edgeDistance : sortedEdgesDistances) {
+                       if (edgeDistance.getFirst()[0] == 0) {
                            perpendicularNearestEdge = edgeDistance.getFirst();
                            break;
                        }
                    }
                }
                List<String> tempCells = new ArrayList<String>();
-               for(String cell : curGeocells) {
+               for (String cell : curGeocells) {
                    tempCells.add(GeocellUtils.adjacent(cell, perpendicularNearestEdge));
                }
                curGeocells.addAll(tempCells);
            }
 
            // We don't have enough items yet, keep searching.
-           if(results.size() < maxResults) {
+           if (results.size() < maxResults) {
                logger.log(Level.FINE,  results.size()+" results found but want "+maxResults+" results, continuing search.");
                continue;
            }
 
            logger.log(Level.FINE, results.size()+" results found.");
-
-//        TODO Todd, not sure if we need this anymore
-
-           // If the currently max_results'th closest item is closer than any
-//           // of the next test geocells, we're done searching.
-//           double currentFarthestReturnableResultDist = GeocellUtils.distance(center, GeocellUtils.getLocation(results.get(maxResults - 1).getFirst()));
-//           if (closestPossibleNextResultDist >=
-//               currentFarthestReturnableResultDist) {
-//               logger.log(Level.FINE, "DONE next result at least "+closestPossibleNextResultDist+" away, current farthest is "+currentFarthestReturnableResultDist+" dist");
-//               break;
-//           }
-//           logger.log(Level.FINE, "next result at least "+closestPossibleNextResultDist+" away, current farthest is "+currentFarthestReturnableResultDist+" dist");
        }
-       
-      
+
        return new SearchResults<T>(results, distances, curGeocells.get(0).length());
    }
-
 }

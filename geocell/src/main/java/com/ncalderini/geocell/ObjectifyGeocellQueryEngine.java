@@ -1,6 +1,6 @@
-package com.beoui.geocell;
+package com.ncalderini.geocell;
 
-import com.beoui.geocell.model.GeocellQuery;
+import com.ncalderini.geocell.model.GeocellQuery;
 import com.googlecode.objectify.cmd.Query;
 
 import java.util.List;
@@ -11,11 +11,11 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
  * GeocellQueryEngine for running Geocell queries against Objectify entities.
  *
  * N.B. You MUST add the '@javax.persistence.Id' annotation in addition to the '@com.googlecode.objectify.annotation.Id' to the Id field of the entity you will
- * be querying, so that GeocellUtils can identify the primary key in {@link com.beoui.geocell.GeocellUtils#getKeyString(Object) GeocellUtils}.
+ * be querying, so that GeocellUtils can identify the primary key in {@link GeocellUtils#getKeyString(Object) GeocellUtils}.
  *
  * @see <a href="https://code.google.com/p/objectify-appengine/">Objectify Project Home</a>
  *
- * @see com.beoui.geocell.GeocellUtils#getKeyString(Object)
+ * @see GeocellUtils#getKeyString(Object)
  *
  * @author unparalleled
  *
@@ -23,7 +23,7 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 public class ObjectifyGeocellQueryEngine implements GeocellQueryEngine {
 
     /**
-     * @see com.beoui.geocell.GeocellQueryEngine#query(com.beoui.geocell.model.GeocellQuery, java.util.List, java.lang.Class)
+     * @see GeocellQueryEngine#query(GeocellQuery, java.util.List, java.lang.Class)
      */
     @Override
     public <T> List<T> query(GeocellQuery baseQuery, List<String> curGeocellsUnique, Class<T> entityClass) {

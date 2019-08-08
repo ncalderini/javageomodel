@@ -1,8 +1,8 @@
-package com.beoui.geocell;
+package com.ncalderini.geocell;
 
 import java.util.List;
 
-import com.beoui.geocell.model.GeocellQuery;
+import com.ncalderini.geocell.model.GeocellQuery;
 
 public interface GeocellQueryEngine {
 

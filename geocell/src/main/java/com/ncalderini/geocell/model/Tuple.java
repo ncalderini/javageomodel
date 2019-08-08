@@ -1,4 +1,4 @@
-package com.beoui.geocell.model;
+package com.ncalderini.geocell.model;
 
 public class Tuple<A, B> {
 

@@ -1,8 +1,8 @@
-package com.beoui.geocell.comparator;
+package com.ncalderini.geocell.comparator;
 
 import java.util.Comparator;
 
-import com.beoui.geocell.model.Tuple;
+import com.ncalderini.geocell.model.Tuple;
 
 public class DoubleTupleComparator implements Comparator<Tuple<int[], Double>> {
 

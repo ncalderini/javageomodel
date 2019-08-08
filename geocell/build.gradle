@@ -26,11 +26,9 @@ bintray {
 }
 
 dependencies {
-    compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.21'
+    providedCompile 'com.google.appengine:appengine:1.+'
     compile 'com.googlecode.objectify:objectify:5.1.13'
     compile 'commons-lang:commons-lang:2.4'
-    compile 'javax.jdo:jdo2-api:2.3-20090302111651'
-    compile 'org.apache.geronimo.specs:geronimo-jpa_3.0_spec:1.1.1'
 
     testCompile 'junit:junit:4.8.1'
     testCompile 'org.mockito:mockito-all:1.8.5'

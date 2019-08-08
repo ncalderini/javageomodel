@@ -1,4 +1,4 @@
-package com.beoui.geocell;
+package com.ncalderini.geocell;
 
 import java.util.logging.Logger;
 

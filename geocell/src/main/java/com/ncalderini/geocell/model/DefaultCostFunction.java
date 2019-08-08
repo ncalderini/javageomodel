@@ -11,9 +11,9 @@ implied. See the License for the specific language governing permissions
 and limitations under the License.
 */
 
-package com.beoui.geocell.model;
+package com.ncalderini.geocell.model;
 
-import com.beoui.geocell.GeocellUtils;
+import com.ncalderini.geocell.GeocellUtils;
 
 /**
  * Default cost function used if no cost function is specified in Geocell.bestBboxSearchCells method.
