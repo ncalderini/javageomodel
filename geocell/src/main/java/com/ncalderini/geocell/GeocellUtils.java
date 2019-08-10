@@ -19,7 +19,6 @@ import com.ncalderini.geocell.model.BoundingBox;
 import com.ncalderini.geocell.model.LocationCapable;
 import com.ncalderini.geocell.model.Point;
 import com.ncalderini.geocell.model.Tuple;
-import com.google.appengine.api.datastore.GeoPt;
 import com.googlecode.objectify.annotation.Id;
 
 import java.lang.annotation.Annotation;
@@ -316,21 +315,21 @@ public final class GeocellUtils {
     public static double pointDistance(String cell, Point point) {
         BoundingBox bbox = computeBox(cell);
 
-        boolean betweenWE = bbox.getWest() <= point.getLon() && point.getLon() <= bbox.getEast();
-        boolean betweenNS = bbox.getSouth() <= point.getLat() && point.getLat() <= bbox.getNorth();
+        boolean betweenWE = bbox.getWest() <= point.getLongitude() && point.getLongitude() <= bbox.getEast();
+        boolean betweenNS = bbox.getSouth() <= point.getLatitude() && point.getLatitude() <= bbox.getNorth();
 
         if(betweenWE) {
             if(betweenNS) {
                 // Inside the geocell.
                 return Math.min(
-                        Math.min(distance(point, new Point(bbox.getSouth(), point.getLon())),distance(point, new Point(bbox.getNorth(), point.getLon()))),
-                        Math.min(distance(point, new Point(point.getLat(), bbox.getEast())),distance(point, new Point(point.getLat(), bbox.getWest()))));
+                        Math.min(distance(point, new Point(bbox.getSouth(), point.getLongitude())),distance(point, new Point(bbox.getNorth(), point.getLongitude()))),
+                        Math.min(distance(point, new Point(point.getLatitude(), bbox.getEast())),distance(point, new Point(point.getLatitude(), bbox.getWest()))));
             } else {
-                return Math.min(distance(point, new Point(bbox.getSouth(), point.getLon())),distance(point, new Point(bbox.getNorth(), point.getLon())));
+                return Math.min(distance(point, new Point(bbox.getSouth(), point.getLongitude())),distance(point, new Point(bbox.getNorth(), point.getLongitude())));
             }
         } else {
             if(betweenNS) {
-                return Math.min(distance(point, new Point(point.getLat(), bbox.getEast())),distance(point, new Point(point.getLat(), bbox.getWest())));
+                return Math.min(distance(point, new Point(point.getLatitude(), bbox.getEast())),distance(point, new Point(point.getLatitude(), bbox.getWest())));
             } else {
                 // TODO(romannurik): optimize
                 return Math.min(Math.min(distance(point, new Point(bbox.getSouth(), bbox.getEast())),distance(point, new Point(bbox.getNorth(), bbox.getEast()))),
@@ -358,9 +357,9 @@ public final class GeocellUtils {
             float subcellLonSpan = (east - west) / GEOCELL_GRID_SIZE;
             float subcellLatSpan = (north - south) / GEOCELL_GRID_SIZE;
 
-            int x = Math.min((int)(GEOCELL_GRID_SIZE * (point.getLon() - west) / (east - west)),
+            int x = Math.min((int)(GEOCELL_GRID_SIZE * (point.getLongitude() - west) / (east - west)),
                     GEOCELL_GRID_SIZE - 1);
-            int y = Math.min((int)(GEOCELL_GRID_SIZE * (point.getLat() - south) / (north - south)),
+            int y = Math.min((int)(GEOCELL_GRID_SIZE * (point.getLatitude() - south) / (north - south)),
                     GEOCELL_GRID_SIZE - 1);
 
             int l[] = {x,y};
@@ -458,10 +457,10 @@ public final class GeocellUtils {
      * @return The 2D great-circle distance between the two given points, in meters.
      */
 	public static double distance(Point p1, Point p2) {
-		double p1lat = Math.toRadians(p1.getLat());
-		double p1lon = Math.toRadians(p1.getLon());
-		double p2lat = Math.toRadians(p2.getLat());
-		double p2lon = Math.toRadians(p2.getLon());
+		double p1lat = Math.toRadians(p1.getLatitude());
+		double p1lon = Math.toRadians(p1.getLongitude());
+		double p2lat = Math.toRadians(p2.getLatitude());
+		double p2lon = Math.toRadians(p2.getLongitude());
 		return RADIUS
 				* Math.acos(makeDoubleInRange(Math.sin(p1lat) * Math.sin(p2lat)
 						+ Math.cos(p1lat) * Math.cos(p2lat)
@@ -515,10 +514,10 @@ public final class GeocellUtils {
             maxWest = Math.min(maxWest, box.getWest());
         }
         List<Tuple<int[],Double>> result = new ArrayList<Tuple<int[],Double>>();
-        result.add(new Tuple<int[], Double>(SOUTH, distance(new Point(maxSouth, point.getLon()), point)));
-        result.add(new Tuple<int[], Double>(NORTH, distance(new Point(maxNorth, point.getLon()), point)));
-        result.add(new Tuple<int[], Double>(WEST, distance(new Point(point.getLat(), maxWest), point)));
-        result.add(new Tuple<int[], Double>(EAST, distance(new Point(point.getLat(), maxEast), point)));
+        result.add(new Tuple<int[], Double>(SOUTH, distance(new Point(maxSouth, point.getLongitude()), point)));
+        result.add(new Tuple<int[], Double>(NORTH, distance(new Point(maxNorth, point.getLongitude()), point)));
+        result.add(new Tuple<int[], Double>(WEST, distance(new Point(point.getLatitude(), maxWest), point)));
+        result.add(new Tuple<int[], Double>(EAST, distance(new Point(point.getLatitude(), maxEast), point)));
         Collections.sort(result, new DoubleTupleComparator());
         return result;
     }
@@ -570,9 +569,9 @@ public final class GeocellUtils {
     	Point location = new Point();
 
         try {
-            GeoPt locationField = (GeoPt) getField(entity.getClass(), Location.class).get(entity);
-            location.setLat(locationField.getLatitude());
-            location.setLon(locationField.getLongitude());
+            Point locationField = (Point) getField(entity.getClass(), Location.class).get(entity);
+            location.setLatitude(locationField.getLatitude());
+            location.setLongitude(locationField.getLongitude());
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }

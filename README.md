@@ -12,7 +12,7 @@ The Gradle dependency is available via jCenter.
 ```gradle
 dependencies {
 	// ... other dependencies here
-    compile 'com.github.ncalderini:geocell:0.1'
+    compile 'com.github.ncalderini:geocell:0.2'
 }
 ```
 
@@ -34,7 +34,7 @@ public class MyEntity implements LocationCapable {
      */
     @Index
     @Location
-    private GeoPt location;
+    private Point location;
 
     /**
     * A list of geohashes containing the location

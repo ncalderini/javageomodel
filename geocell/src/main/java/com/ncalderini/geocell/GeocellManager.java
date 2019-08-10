@@ -1,5 +1,6 @@
 package com.ncalderini.geocell;
 
+import com.googlecode.objectify.cmd.Query;
 import com.ncalderini.geocell.model.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -190,14 +191,14 @@ public class GeocellManager {
         return minCostCellSet;
     }
    
-   public static final <T> List<T> proximitySearch(Point center, int maxResults, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, int maxGeocellResolution) {
+   public static <T> List<T> proximitySearch(Point center, int maxResults, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, String orderBy, int maxGeocellResolution) {
        ObjectifyGeocellQueryEngine ofySearch = new ObjectifyGeocellQueryEngine();
-       return proximitySearch(center, maxResults, 0,  maxDistance, entityClass, baseQuery, ofySearch, maxGeocellResolution).getResults();
+       return proximitySearch(center, maxResults, 0,  maxDistance, entityClass, baseQuery, orderBy, ofySearch, maxGeocellResolution).getResults();
    }
 
    /**
     * Perform a search from the center.  The corresponding entities returned must be >= minDistance(inclusive) and < maxDistance (exclusive)
-    * @param center
+    * @param center The point of origin
     * @param maxResults The maximum number of results to include
     * @param minDistance The minimum distance (inclusive)
     * @param maxDistance The maximum distance (exclusive)
@@ -207,7 +208,7 @@ public class GeocellManager {
     * @param maxGeocellResolution The max resolution to use when searching
     * @return
     */
-   public static final <T> SearchResults<T> proximitySearch(Point center, int maxResults, double minDistance, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, GeocellQueryEngine queryEngine, int maxGeocellResolution) {
+   public static <T> SearchResults<T> proximitySearch(Point center, int maxResults, double minDistance, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, String orderBy, GeocellQueryEngine queryEngine, int maxGeocellResolution) {
      
        List<T> results = new ArrayList<T>(maxResults);
        List<Double> distances = new ArrayList<Double>(maxResults);
@@ -253,7 +254,7 @@ public class GeocellManager {
            curTempUnique.removeAll(searchedCells);
            curGeocellsUnique = new ArrayList<String>(curTempUnique);
 
-           List<T> queryResults = queryEngine.query(baseQuery, curGeocellsUnique, entityClass);
+           List<T> queryResults = queryEngine.query(baseQuery, orderBy, curGeocellsUnique, entityClass);
 
            logger.log(Level.FINE, "fetch complete for: " + StringUtils.join(curGeocellsUnique, ", "));
 

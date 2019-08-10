@@ -6,6 +6,6 @@ import com.ncalderini.geocell.model.GeocellQuery;
 
 public interface GeocellQueryEngine {
 
-	public abstract <T> List<T> query(GeocellQuery baseQuery, List<String> curGeocellsUnique, Class<T> entityClass);
+	<T> List<T> query(GeocellQuery baseQuery, String orderBy, List<String> curGeocellsUnique, Class<T> entityClass);
 
 }

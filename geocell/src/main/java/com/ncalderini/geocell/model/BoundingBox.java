@@ -41,19 +41,19 @@ public class BoundingBox {
     }
 
     public double getNorth() {
-        return northEast.getLat();
+        return northEast.getLatitude();
     }
 
     public double getSouth() {
-        return southWest.getLat();
+        return southWest.getLatitude();
     }
 
     public double getWest() {
-        return southWest.getLon();
+        return southWest.getLongitude();
     }
 
     public double getEast() {
-        return northEast.getLon();
+        return northEast.getLongitude();
     }
 
     public Point getNorthEast() {
