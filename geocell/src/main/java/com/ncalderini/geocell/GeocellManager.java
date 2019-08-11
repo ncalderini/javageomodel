@@ -210,8 +210,8 @@ public class GeocellManager {
     */
    public static <T> SearchResults<T> proximitySearch(Point center, int maxResults, double minDistance, double maxDistance, Class<T> entityClass, GeocellQuery baseQuery, String orderBy, GeocellQueryEngine queryEngine, int maxGeocellResolution) {
      
-       List<T> results = new ArrayList<T>(maxResults);
-       List<Double> distances = new ArrayList<Double>(maxResults);
+       Set<T> results = new HashSet<>(maxResults);
+       List<Double> distances = new ArrayList<>(maxResults);
 
        Validate.isTrue(maxGeocellResolution < MAX_GEOCELL_RESOLUTION + 1,
                "Invalid max resolution parameter. Must be inferior to ", MAX_GEOCELL_RESOLUTION);
@@ -273,33 +273,10 @@ public class GeocellManager {
              if (distance < minDistance || (maxDistance != 0 && distance > maxDistance)) {
                continue;
              }
-             
-             int index = Collections.binarySearch(distances, distance);
-             
-             //already in the index
-             if (index > -1) {
-               //check if it's the same point, if it is, skip it.  Otherwise continue below
-               //set the insert index
-               
-               if (GeocellUtils.getKeyString(results.get(index)).equals(GeocellUtils.getKeyString(entity))) {
-                 continue;
-               }
-               
-               index++;
-               
-             } else {
-               //set the insert index
-               index = (index+1)*-1;
-             }
-             results.add(index, entity);
-             distances.add(index, distance);
-             
-             /**
-              * Discard an additional entries as we iterate to avoid holding them all in ram
-              */
-             if (results.size() > maxResults) {
-               results.remove(results.size()-1);
-               distances.remove(distances.size()-1);
+
+             if (results.size() < maxResults) {
+                 results.add(entity);
+                 distances.add(distance);
              }
            }
            
@@ -387,6 +364,6 @@ public class GeocellManager {
            logger.log(Level.FINE, results.size()+" results found.");
        }
 
-       return new SearchResults<T>(results, distances, curGeocells.get(0).length());
+       return new SearchResults<T>(new ArrayList<>(results), distances, curGeocells.get(0).length());
    }
 }
